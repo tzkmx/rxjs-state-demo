@@ -1,21 +1,20 @@
 import {
-    from,
     Observable,
     distinctUntilChanged,
-    map, shareReplay, pipe, BehaviorSubject
+    map,
+    BehaviorSubject
 } from 'rxjs';
 import {
-    fromObservable,
     AnyActorLogic,
     ContextFrom,
     createActor,
     EventFromLogic,
-    SnapshotFrom, StateValueFrom
+    SnapshotFrom
 } from "xstate";
 
 export class ObservableStore<
     TMachine extends AnyActorLogic
-> {
+> implements Disposable {
     private state$: BehaviorSubject<SnapshotFrom<TMachine>>;
     private actor: ReturnType<typeof createActor<TMachine>>;
 
@@ -100,5 +99,9 @@ export class ObservableStore<
     // Get current state value
     public getState() {
         return this.getSnapshot().value;
+    }
+
+    [Symbol.dispose](): void {
+        this.stop()
     }
 }
